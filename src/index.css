@@ -122,13 +122,82 @@
   }
 }
 
-@media print {
-  @page {
-    margin: 0;
+@media screen {
+
+  .page-break {
+
+    margin: 2rem 0;
+
+    border-bottom: 2px dashed var(--border);
+
+    display: flex;
+
+    justify-content: center;
+
+    position: relative;
+
+    width: 100%;
+
   }
-  body {
-    margin: 1.6cm;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+
+  .page-break::after {
+
+    content: "Page Break";
+
+    background: var(--background);
+
+    padding: 0 0.5rem;
+
+    color: var(--muted-foreground);
+
+    font-size: 0.75rem;
+
+    font-family: monospace;
+
+    text-transform: uppercase;
+
+    position: absolute;
+
+    top: -0.6rem;
+
   }
+
 }
+
+
+
+@media print {
+
+  @page {
+
+    margin: 0;
+
+  }
+
+  body {
+
+    margin: 1.6cm;
+
+    -webkit-print-color-adjust: exact;
+
+    print-color-adjust: exact;
+
+  }
+
+  .page-break {
+
+    page-break-after: always;
+
+    break-after: page;
+
+    display: block;
+
+    height: 0;
+
+    visibility: hidden;
+
+  }
+
+}
+
+

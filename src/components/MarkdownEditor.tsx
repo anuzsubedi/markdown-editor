@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+import rehypeRaw from "rehype-raw";
 import { 
   Printer, 
   Moon, 
@@ -8,7 +9,8 @@ import {
   PanelLeftClose, 
   PanelLeftOpen, 
   Eye,
-  EyeOff
+  EyeOff,
+  Scissors
 } from "lucide-react";
 import {
   ResizableHandle,
@@ -71,6 +73,7 @@ export function MarkdownEditor() {
   const [mounted, setMounted] = useState(false);
   const [showEditor, setShowEditor] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -89,7 +92,6 @@ export function MarkdownEditor() {
         const originalContents = document.body.innerHTML;
         const printClone = printContent.cloneNode(true) as HTMLElement;
         
-        // Force light mode on the cloned content's markdown preview element
         const markdownElement = printClone.querySelector('[data-color-mode]');
         if (markdownElement) {
           markdownElement.setAttribute('data-color-mode', 'light');
@@ -109,6 +111,25 @@ export function MarkdownEditor() {
         window.location.reload(); 
       }
     }, 100);
+  };
+
+  const insertPageBreak = () => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = markdown;
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+    const pageBreak = '\n<div class="page-break"></div>\n';
+    
+    const newText = before + pageBreak + after;
+    setMarkdown(newText);
+    
+    setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + pageBreak.length, start + pageBreak.length);
+    }, 0);
   };
 
   const toggleTheme = () => {
@@ -190,6 +211,16 @@ export function MarkdownEditor() {
                 <div className="flex shrink-0 items-center justify-between border-b-2 px-4 h-14 bg-muted/20">
                   <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold">Editor</span>
                   <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-2 px-2 text-xs font-mono"
+                      onClick={insertPageBreak}
+                      title="Insert Page Break"
+                    >
+                      <Scissors className="h-4 w-4" />
+                      <span className="hidden sm:inline">Page Break</span>
+                    </Button>
                     {!showPreview && (
                       <Button
                         variant="ghost"
@@ -216,6 +247,7 @@ export function MarkdownEditor() {
                   </div>
                 </div>
                 <textarea
+                  ref={textareaRef}
                   value={markdown}
                   onChange={(e) => setMarkdown(e.target.value)}
                   className="flex-1 w-full resize-none bg-background p-6 font-mono text-sm leading-7 outline-none focus:ring-0 border-none"
@@ -263,7 +295,8 @@ export function MarkdownEditor() {
                 <div className="p-8 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6" id="markdown-preview">
                   <MarkdownPreview 
                     source={markdown} 
-                    style={{ 
+                    rehypePlugins={[rehypeRaw]}
+                    style={{
                       backgroundColor: 'transparent', 
                       color: 'inherit',
                       fontFamily: 'inherit'
