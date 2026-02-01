@@ -91,7 +91,7 @@ Insert images and links easily:
 
 ![Header Image](https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80)
 
-[GitHub Repository](https://github.com) | [Markdown Guide](https://www.markdownguide.org)
+[GitHub Repository](https://github.com/anuzsubedi/markdown-editor) | [Markdown Guide](https://www.markdownguide.org)
 
 ---
 
@@ -118,13 +118,21 @@ export function MarkdownEditor() {
   const [showEditor, setShowEditor] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
   const [pdfMargin, setPdfMargin] = useState("20mm");
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [dontShowPrintDialog, setDontShowPrintDialog] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('dontShowPrintDialog') === 'true';
+    }
+    return false;
+  });
+  const [dialogCheckbox, setDialogCheckbox] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handlePrint = () => {
+  const executePrint = () => {
     const isDark = document.documentElement.classList.contains("dark");
     if (isDark) {
       document.documentElement.classList.remove("dark");
@@ -175,6 +183,23 @@ export function MarkdownEditor() {
     }, 100);
   };
 
+  const handlePrint = () => {
+    if (dontShowPrintDialog) {
+      executePrint();
+    } else {
+      setShowPrintDialog(true);
+    }
+  };
+
+  const confirmPrint = () => {
+    if (dialogCheckbox) {
+      localStorage.setItem('dontShowPrintDialog', 'true');
+      setDontShowPrintDialog(true);
+    }
+    setShowPrintDialog(false);
+    executePrint();
+  };
+
   const insertPageBreak = () => {
     if (!textareaRef.current) return;
     const textarea = textareaRef.current;
@@ -222,6 +247,41 @@ export function MarkdownEditor() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
+      {/* Print Dialog */}
+      {showPrintDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
+            <h3 className="text-lg font-semibold leading-none tracking-tight mb-4">Print Settings</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              For the best result, please disable <strong>"Headers and footers"</strong> in your browser's print settings dialog.
+            </p>
+            <div className="flex items-center space-x-2 mb-6">
+              <input 
+                type="checkbox" 
+                id="dont-show" 
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                checked={dialogCheckbox}
+                onChange={(e) => setDialogCheckbox(e.target.checked)}
+              />
+              <label 
+                htmlFor="dont-show" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Don't show this again
+              </label>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setShowPrintDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={confirmPrint}>
+                Print
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="flex h-16 shrink-0 items-center justify-between border-b-2 bg-background px-6">
         <div className="flex items-center gap-4">
