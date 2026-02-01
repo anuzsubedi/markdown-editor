@@ -21,50 +21,94 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 
-const defaultMarkdown = `# Markdown Editor
+const defaultMarkdown = `# Modern Markdown Editor
 
-Welcome to your new **Markdown Editor**! Use the split view to edit and preview in real-time.
+A powerful, minimalist, and real-time markdown editing experience.
 
-## Features
+---
 
-- **Typography**: Support for **bold**, *italic*, ~~strikethrough~~, and \`inline code\`.
+## Getting Started
 
-- **Syntax Highlighting**:
+This editor provides a split-view experience where you can write in **Markdown** on the left and see the rendered **Preview** on the right.
 
+### Core Features:
+- **Real-time Preview**: See changes as you type.
+- **Syntax Highlighting**: Beautiful code blocks for many languages.
+- **PDF Export**: Generate high-quality documents with one click.
+- **Dark Mode Support**: Easy on the eyes, day or night.
 
+---
 
-\`\`\`tsx
+## Styling Guide
 
-function HelloWorld() {
+### Typography
+You can style your text using standard Markdown syntax:
+- **Bold text** using \`**text**\` or \`__text__\`
+- *Italic text* using \`*text*\` or \`_text_\`
+- ~~Strikethrough~~ using \`~~text~~\`
+- \`Inline code\` using backticks
 
-  return <h1>Hello, World!</h1>;
+### Blockquotes
+> "Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML)."
+> — *John Gruber*
 
+---
+
+## Code Snippets
+
+The editor supports syntax highlighting for various programming languages.
+
+\`\`\`javascript
+// A simple function to greet the user
+function greet(name) {
+  console.log(\`Hello, \${name}! Welcome to the editor.\`);
 }
 
+greet('Developer');
 \`\`\`
 
-- **Tables**:
+---
 
+## Data & Organization
+
+### Tables
 | Feature | Status | Priority |
-| :--- | :---: | ---: |
-| WYSIWYG | Yes | High |
-| PDF Export | Yes | Medium |
-| Dark Mode | Yes | Low |
+| :--- | :---: | :--- |
+| Editor | Done | High |
+| PDF Print | Done | Medium |
+| Cloud Sync | Planned | Low |
 
-- **Lists**:
-  1. Ordered list item
-  2. Another item
-  - Unordered sub-list
-  - Another sub-item
-- **Blockquotes**:
-  > "Simplicity is the ultimate sophistication." - Leonardo da Vinci
+### Tasks & Lists
+- [x] Write documentation
+- [x] Test responsiveness
+- [ ] Implement auto-save
+- [ ] Add plugin support
 
-- **Links & Images**:
-  [Check out React](https://react.dev)
+---
 
-  ![Random Image](https://picsum.photos/400/200)
+## Media & Links
+Insert images and links easily:
 
-Start typing to see your changes!
+![Header Image](https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80)
+
+[GitHub Repository](https://github.com/anuzsubedi/markdown-editor) | [Markdown Guide](https://www.markdownguide.org)
+
+---
+
+## Page Management
+
+To force a page break during PDF export, use the **Page Break** button in the toolbar or insert the following HTML tag:
+
+\`<div class="page-break"></div>\`
+
+<div class="page-break"></div>
+
+# Second Page Content
+
+This content is automatically moved to a new page when printing or saving as PDF. This is ideal for:
+1. **Title Pages**
+2. **Table of Contents**
+3. **New Chapters**
 `;
 
 export function MarkdownEditor() {
@@ -73,13 +117,22 @@ export function MarkdownEditor() {
   const [mounted, setMounted] = useState(false);
   const [showEditor, setShowEditor] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
+  const [pdfMargin, setPdfMargin] = useState("20mm");
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [dontShowPrintDialog, setDontShowPrintDialog] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('dontShowPrintDialog') === 'true';
+    }
+    return false;
+  });
+  const [dialogCheckbox, setDialogCheckbox] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handlePrint = () => {
+  const executePrint = () => {
     const isDark = document.documentElement.classList.contains("dark");
     if (isDark) {
       document.documentElement.classList.remove("dark");
@@ -90,6 +143,7 @@ export function MarkdownEditor() {
       const printContent = document.getElementById("markdown-preview");
       if (printContent) {
         const originalContents = document.body.innerHTML;
+        const originalTitle = document.title;
         const printClone = printContent.cloneNode(true) as HTMLElement;
         
         const markdownElement = printClone.querySelector('[data-color-mode]');
@@ -97,11 +151,27 @@ export function MarkdownEditor() {
           markdownElement.setAttribute('data-color-mode', 'light');
         }
         
+        // Inject page margin styles
+        const style = document.createElement('style');
+        style.innerHTML = `
+          @page {
+            margin: ${pdfMargin};
+          }
+          @media print {
+            body {
+              margin: 0;
+            }
+          }
+        `;
+        printClone.appendChild(style);
+        
         document.body.innerHTML = "";
         document.body.appendChild(printClone);
+        document.title = "\u00A0";
         
         window.print();
         
+        document.title = originalTitle;
         document.body.innerHTML = originalContents;
         
         if (isDark) {
@@ -111,6 +181,23 @@ export function MarkdownEditor() {
         window.location.reload(); 
       }
     }, 100);
+  };
+
+  const handlePrint = () => {
+    if (dontShowPrintDialog) {
+      executePrint();
+    } else {
+      setShowPrintDialog(true);
+    }
+  };
+
+  const confirmPrint = () => {
+    if (dialogCheckbox) {
+      localStorage.setItem('dontShowPrintDialog', 'true');
+      setDontShowPrintDialog(true);
+    }
+    setShowPrintDialog(false);
+    executePrint();
   };
 
   const insertPageBreak = () => {
@@ -160,6 +247,41 @@ export function MarkdownEditor() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
+      {/* Print Dialog */}
+      {showPrintDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
+            <h3 className="text-lg font-semibold leading-none tracking-tight mb-4">Print Settings</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              For the best result, please disable <strong>"Headers and footers"</strong> in your browser's print settings dialog.
+            </p>
+            <div className="flex items-center space-x-2 mb-6">
+              <input 
+                type="checkbox" 
+                id="dont-show" 
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                checked={dialogCheckbox}
+                onChange={(e) => setDialogCheckbox(e.target.checked)}
+              />
+              <label 
+                htmlFor="dont-show" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Don't show this again
+              </label>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setShowPrintDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={confirmPrint}>
+                Print
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="flex h-16 shrink-0 items-center justify-between border-b-2 bg-background px-6">
         <div className="flex items-center gap-4">
@@ -169,6 +291,17 @@ export function MarkdownEditor() {
         </div>
         
         <div className="flex items-center gap-2">
+          <select 
+            className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            value={pdfMargin}
+            onChange={(e) => setPdfMargin(e.target.value)}
+            title="PDF Margin"
+          >
+            <option value="0mm">No Margin</option>
+            <option value="10mm">Narrow (10mm)</option>
+            <option value="20mm">Standard (20mm)</option>
+            <option value="25.4mm">Wide (1in)</option>
+          </select>
           <Button 
             variant="outline" 
             size="sm" 
