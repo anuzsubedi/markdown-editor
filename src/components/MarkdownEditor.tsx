@@ -292,7 +292,7 @@ export function MarkdownEditor() {
                 </div>
               </div>
               <ScrollArea className="h-full bg-background/50">
-                <div className="p-8 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6" id="markdown-preview">
+                <div className="p-8 pb-20 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6" id="markdown-preview">
                   <MarkdownPreview 
                     source={markdown} 
                     rehypePlugins={[rehypeRaw]}
