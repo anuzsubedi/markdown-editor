@@ -1,73 +1,67 @@
-# React + TypeScript + Vite
+# Modern Markdown Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A powerful, minimalist, and real-time markdown editing experience designed for developers and writers who value simplicity and precision.
 
-Currently, two official plugins are available:
+I built this because I needed a reliable tool for my own workflow, and I'm happy to share it with anyone else who finds it useful!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[**Live Demo**](https://markdown.anuz.dev)
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Split-View Editing**: Write in Markdown and see the rendered preview in real-time.
+- **Syntax Highlighting**: Beautiful code blocks with support for multiple programming languages.
+- **Customizable PDF Export**: Generate high-quality documents with adjustable page margins.
+- **Page Management**: Dedicated "Page Break" button to perfectly structure your multi-page documents.
+- **Dark Mode**: Toggle between light, dark, and system themes.
+- **Responsive Design**: Works seamlessly across different screen sizes.
+- **Privacy First**: Your data stays in your browser; no cloud storage, no tracking.
 
-## Expanding the ESLint configuration
+## How to Use
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Write**: Start typing in the left panel. Use the toolbar for quick formatting.
+2. **Preview**: Watch the right panel update instantly.
+3. **Structure**: Use the "Page Break" button to indicate where new pages should start in your PDF.
+4. **Export**: Click the **PDF** button, select your desired margin, and save your document.
+   - *Tip: For a perfectly clean document, remember to disable "Headers and footers" in the browser's print dialog.*
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Technology Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **React 19** & **TypeScript**
+- **Vite** for blazing fast builds
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+- **uiw/react-markdown-preview** for rendering
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Contributing
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+I'm always looking to improve this tool! If you have ideas for new features, find a bug, or want to improve the code, feel free to:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Open an **Issue** to report bugs or suggest enhancements.
+- Submit a **Pull Request** with your improvements.
+- Share your feedback on how you're using the editor.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Collaboration is more than welcome—let's make this the best markdown editor together!
+
+## License
+
+MIT License
+
+Copyright (c) 2026 Anuz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
