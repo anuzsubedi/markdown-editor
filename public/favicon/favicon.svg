@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><style>
+    #light-icon {
+      display: inline;
+    }
+    #dark-icon {
+      display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #light-icon {
+        display: none;
+      }
+      #dark-icon {
+        display: inline;
+      }
+    }
+  </style><g id="light-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1092)"><rect width="1000" height="1000" fill="#ffffff"></rect><g transform="matrix(0.7,0,0,0.7,150,150)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><svg width="1000" height="1000" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <path d="M150 750V250l100-100h130l120 200 120-200h130l100 100v500L750 850H650V450L550 620H450L350 450v400H250Zm740 40 30-30h40l30 30v60l-30 30h-40l-30-30z" fill="#0ea5e9"></path>
+</svg></svg></g></g><defs><clipPath id="SvgjsClipPath1092"><rect width="1000" height="1000" x="0" y="0" rx="500" ry="500"></rect></clipPath></defs></svg></g><g id="dark-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1093)"><rect width="1000" height="1000" fill="#000000"></rect><g transform="matrix(0.7,0,0,0.7,150,150)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><svg width="1000" height="1000" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <path d="M150 750V250l100-100h130l120 200 120-200h130l100 100v500L750 850H650V450L550 620H450L350 450v400H250Zm740 40 30-30h40l30 30v60l-30 30h-40l-30-30z" fill="#0ea5e9"></path>
+</svg></svg></g></g><defs><clipPath id="SvgjsClipPath1093"><rect width="1000" height="1000" x="0" y="0" rx="500" ry="500"></rect></clipPath></defs></svg></g></svg>
