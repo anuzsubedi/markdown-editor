@@ -10,7 +10,8 @@ import {
   PanelLeftOpen, 
   Eye,
   EyeOff,
-  Scissors
+  Scissors,
+  RotateCcw
 } from "lucide-react";
 import {
   ResizableHandle,
@@ -111,8 +112,13 @@ This content is automatically moved to a new page when printing or saving as PDF
 3. **New Chapters**
 `;
 
+const MARKDOWN_STORAGE_KEY = "markdown-editor-content";
+
 export function MarkdownEditor() {
-  const [markdown, setMarkdown] = useState(defaultMarkdown);
+  const [markdown, setMarkdown] = useState(() => {
+    if (typeof window === "undefined") return defaultMarkdown;
+    return localStorage.getItem(MARKDOWN_STORAGE_KEY) ?? defaultMarkdown;
+  });
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showEditor, setShowEditor] = useState(true);
@@ -131,6 +137,11 @@ export function MarkdownEditor() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(MARKDOWN_STORAGE_KEY, markdown);
+  }, [markdown]);
 
   const executePrint = () => {
     const isDark = document.documentElement.classList.contains("dark");
@@ -181,6 +192,7 @@ export function MarkdownEditor() {
         window.location.reload(); 
       }
     }, 100);
+
   };
 
   const handlePrint = () => {
@@ -217,6 +229,11 @@ export function MarkdownEditor() {
         textarea.focus();
         textarea.setSelectionRange(start + pageBreak.length, start + pageBreak.length);
     }, 0);
+  };
+
+  const clearContent = () => {
+    setMarkdown(defaultMarkdown);
+    setTimeout(() => textareaRef.current?.focus(), 0);
   };
 
   const toggleTheme = () => {
@@ -353,6 +370,16 @@ export function MarkdownEditor() {
                     >
                       <Scissors className="h-4 w-4" />
                       <span className="hidden sm:inline">Page Break</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-2 px-2 text-xs font-mono"
+                      onClick={clearContent}
+                      title="Clear and restore default content"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      <span className="hidden sm:inline">Clear</span>
                     </Button>
                     {!showPreview && (
                       <Button
