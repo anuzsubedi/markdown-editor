@@ -5,13 +5,10 @@ import {
   Printer, 
   Moon, 
   Sun, 
-  Monitor, 
   PanelLeftClose, 
   PanelLeftOpen, 
   Eye,
-  EyeOff,
-  Scissors,
-  RotateCcw
+  EyeOff
 } from "lucide-react";
 import {
   ResizableHandle,
@@ -238,24 +235,13 @@ export function MarkdownEditor() {
 
   const toggleTheme = () => {
     if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("system");
     else setTheme("light");
   };
 
   const getThemeIcon = () => {
     if (theme === "light") return <Sun className="h-4 w-4" />;
-    if (theme === "dark") return <Moon className="h-4 w-4" />;
-    return <Monitor className="h-4 w-4" />;
+    return <Moon className="h-4 w-4" />;
   };
-
-  const effectiveTheme = (() => {
-    if (theme === "system") {
-      return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return theme;
-  })();
 
   const canHideEditor = showPreview;
   const canHidePreview = showEditor;
@@ -263,11 +249,11 @@ export function MarkdownEditor() {
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
+    <div className="flex h-screen flex-col overflow-hidden">
       {/* Print Dialog */}
       {showPrintDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
+          <div className="w-full max-w-md border bg-background p-6 shadow-lg">
             <h3 className="text-lg font-semibold leading-none tracking-tight mb-4">Print Settings</h3>
             <p className="text-sm text-muted-foreground mb-4">
               For the best result, please disable <strong>"Headers and footers"</strong> in your browser's print settings dialog.
@@ -300,16 +286,19 @@ export function MarkdownEditor() {
       )}
 
       {/* Header */}
-      <header className="flex h-16 shrink-0 items-center justify-between border-b-2 bg-background px-6">
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-border/80 bg-background/85 px-4 shadow-sm backdrop-blur sm:px-5">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-mono font-bold tracking-tight text-lg">Markdown Editor</span>
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold tracking-tight">Markdown Editor</span>
+              <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Write • Preview • Export</span>
+            </div>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <select 
-            className="h-8 rounded-md border border-input bg-background px-2 py-1 text-xs font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-9 border border-border/90 bg-background/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
             value={pdfMargin}
             onChange={(e) => setPdfMargin(e.target.value)}
             title="PDF Margin"
@@ -323,7 +312,7 @@ export function MarkdownEditor() {
             variant="outline" 
             size="sm" 
             onClick={handlePrint}
-            className="hidden sm:flex border-2 font-mono text-xs uppercase font-bold"
+            className="hidden border-border/90 bg-background/90 text-xs font-semibold uppercase tracking-[0.08em] shadow-sm sm:flex"
           >
             <Printer className="mr-2 h-4 w-4" />
             PDF
@@ -332,7 +321,7 @@ export function MarkdownEditor() {
             variant="ghost" 
             size="icon" 
             onClick={handlePrint}
-            className="flex sm:hidden"
+            className="flex border border-border/90 bg-background/90 shadow-sm sm:hidden"
           >
             <Printer className="h-4 w-4" />
           </Button>
@@ -341,7 +330,7 @@ export function MarkdownEditor() {
             size="icon" 
             onClick={toggleTheme} 
             title={`Theme: ${theme}`}
-            className="ml-1"
+            className="ml-1 border border-border/90 bg-background/90 shadow-sm"
           >
             {getThemeIcon()}
           </Button>
@@ -349,43 +338,41 @@ export function MarkdownEditor() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden p-4 sm:p-6 bg-muted/10">
+      <main className="min-h-0 flex-1 overflow-hidden bg-background/70">
         <ResizablePanelGroup 
           direction="horizontal" 
-          className="h-full w-full border-2 bg-background shadow-none"
+          className="h-full w-full overflow-hidden border-y border-border/80 bg-card/95 shadow-[0_14px_48px_-26px_rgba(0,0,0,0.45)]"
         >
           {/* Editor Panel */}
           {showEditor && (
             <>
               <ResizablePanel defaultSize={showPreview ? 50 : 100} minSize={20} className="flex flex-col">
-                <div className="flex shrink-0 items-center justify-between border-b-2 px-4 h-14 bg-muted/20">
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold">Editor</span>
+                <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/70 bg-muted/60 px-4">
+                  <span className="text-xs uppercase tracking-[0.18em] font-semibold">Editor</span>
                   <div className="flex items-center gap-1">
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      className="h-8 gap-2 px-2 text-xs font-mono"
+                      className="h-8 gap-2 border-border/85 bg-background/85 px-2 text-[11px] uppercase tracking-[0.08em] shadow-sm"
                       onClick={insertPageBreak}
-                      title="Insert Page Break"
+                      title="Insert Page Break at Cursor"
                     >
-                      <Scissors className="h-4 w-4" />
                       <span className="hidden sm:inline">Page Break</span>
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      className="h-8 gap-2 px-2 text-xs font-mono"
+                      className="h-8 gap-2 border-border/85 bg-background/85 px-2 text-[11px] uppercase tracking-[0.08em] shadow-sm"
                       onClick={clearContent}
                       title="Clear and restore default content"
                     >
-                      <RotateCcw className="h-4 w-4" />
                       <span className="hidden sm:inline">Clear</span>
                     </Button>
                     {!showPreview && (
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        className="h-8 gap-2 px-2 text-xs font-mono"
+                        className="h-8 gap-2 border-border/85 bg-background/85 px-2 text-[11px] uppercase tracking-[0.08em] shadow-sm"
                         onClick={() => setShowPreview(true)}
                         title="Show Preview"
                       >
@@ -395,9 +382,9 @@ export function MarkdownEditor() {
                     )}
                     {canHideEditor && (
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 border-border/85 bg-background/85 shadow-sm"
                         onClick={() => setShowEditor(false)}
                         title="Hide Editor"
                       >
@@ -410,7 +397,7 @@ export function MarkdownEditor() {
                   ref={textareaRef}
                   value={markdown}
                   onChange={(e) => setMarkdown(e.target.value)}
-                  className="flex-1 w-full resize-none bg-background p-6 font-mono text-sm leading-7 outline-none focus:ring-0 border-none"
+                  className="flex-1 w-full resize-none border-none bg-background p-6 text-sm leading-7 outline-none focus:ring-0"
                   placeholder="Start writing..."
                   spellCheck={false}
                 />
@@ -423,14 +410,14 @@ export function MarkdownEditor() {
           {/* Preview Panel */}
           {showPreview && (
             <ResizablePanel defaultSize={showEditor ? 50 : 100} minSize={30} className="flex flex-col">
-              <div className="flex shrink-0 items-center justify-between border-b-2 px-4 h-14 bg-muted/20">
-                <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold">Preview</span>
+                <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/70 bg-muted/60 px-4">
+                <span className="text-xs uppercase tracking-[0.18em] font-semibold">Preview</span>
                 <div className="flex items-center gap-1">
                   {!showEditor && (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      className="h-8 gap-2 px-2 text-xs font-mono"
+                      className="h-8 gap-2 border-border/85 bg-background/85 px-2 text-[11px] uppercase tracking-[0.08em] shadow-sm"
                       onClick={() => setShowEditor(true)}
                       title="Show Editor"
                     >
@@ -440,9 +427,9 @@ export function MarkdownEditor() {
                   )}
                   {canHidePreview && (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-8 w-8 border-border/85 bg-background/85 shadow-sm"
                       onClick={() => setShowPreview(false)}
                       title="Hide Preview"
                     >
@@ -451,18 +438,17 @@ export function MarkdownEditor() {
                   )}
                 </div>
               </div>
-              <ScrollArea className="h-full bg-background/50">
+              <ScrollArea className="h-full bg-background/80">
                 <div className="p-8 pb-20 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6" id="markdown-preview">
                   <MarkdownPreview 
                     source={markdown} 
                     rehypePlugins={[rehypeRaw]}
                     style={{
                       backgroundColor: 'transparent', 
-                      color: 'inherit',
-                      fontFamily: 'inherit'
+                      color: 'inherit'
                     }}
                     wrapperElement={{
-                      "data-color-mode": effectiveTheme === 'dark' ? 'dark' : 'light'
+                      "data-color-mode": theme === 'dark' ? 'dark' : 'light'
                     } as any}
                   />
                 </div>
