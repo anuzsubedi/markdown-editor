@@ -123,6 +123,13 @@
 }
 
 @media screen {
+  #markdown-preview .wmde-markdown hr,
+  #markdown-preview hr {
+    border: 0;
+    border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+    margin: 1.5rem 0;
+    opacity: 0.5;
+  }
 
   .page-break {
 
@@ -198,6 +205,13 @@
 
   }
 
+  #markdown-preview .wmde-markdown hr,
+  #markdown-preview hr {
+    display: none !important;
+    border: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
 }
-
-
