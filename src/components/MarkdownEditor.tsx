@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import rehypeRaw from "rehype-raw";
 import { 
@@ -8,7 +8,8 @@ import {
   PanelLeftClose, 
   PanelLeftOpen, 
   Eye,
-  EyeOff
+  EyeOff,
+  Upload
 } from "lucide-react";
 import {
   ResizableHandle,
@@ -129,6 +130,7 @@ export function MarkdownEditor() {
     return false;
   });
   const [dialogCheckbox, setDialogCheckbox] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -139,6 +141,40 @@ export function MarkdownEditor() {
     if (typeof window === "undefined") return;
     localStorage.setItem(MARKDOWN_STORAGE_KEY, markdown);
   }, [markdown]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // Accept .md, .txt, or generic text/markdown types
+      if (file.name.endsWith('.md') || file.name.endsWith('.txt') || file.type === 'text/markdown' || file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target?.result;
+          if (typeof content === 'string') {
+            setMarkdown(content);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+  }, []);
 
   const executePrint = () => {
     const isDark = document.documentElement.classList.contains("dark");
@@ -249,7 +285,27 @@ export function MarkdownEditor() {
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div 
+      className="flex h-screen flex-col overflow-hidden relative"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drag and Drop Overlay */}
+      {isDragging && (
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-md border-4 border-dashed border-primary m-4 rounded-xl pointer-events-none animate-in fade-in zoom-in duration-200">
+          <div className="flex flex-col items-center gap-4 bg-card p-10 rounded-2xl shadow-2xl border border-border/50 scale-110">
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+              <Upload className="h-10 w-10 text-primary" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-2xl font-bold tracking-tight">Drop your Markdown file</h3>
+              <p className="text-muted-foreground mt-1">Import content from .md or .txt files</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Print Dialog */}
       {showPrintDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
